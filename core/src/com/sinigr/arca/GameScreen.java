@@ -36,17 +36,18 @@ public class GameScreen implements Screen {
 	    }
 	private OrthographicCamera camera;
 	private SpriteBatch Sb; 
-	private Stage stage;  
+	private static Stage stage;  
 	Texture bricks, balls,basket,bonuses;  
 	static TextureRegion[] Bricks ,Balls, Bonuses;
 	private Array <Brick> BricksArray;  
-	private Array <Ball> BallsArray;
+	static Array <Ball> BallsArray;
 	private Array <Bonus> BonusArray;
 	CharSequence str;
 	BitmapFont TextDrawer;
-	int brickCounter, lifeCounter;
+	int brickCounter;
+	static int lifeCounter;
 	ScreenController sc;
-	Basket bask; 
+	static Basket bask; 
 	
     public GameScreen(SpriteBatch batch, ScreenController sc) {
     	this.sc = sc;
@@ -63,7 +64,7 @@ public class GameScreen implements Screen {
     	brickCounter = 0;
     	lifeCounter = 3;
     	GenerateLvl(1);
-    	GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 300, 255, 285);
+    	GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 600, 255, 285);
     	TextDrawer = new BitmapFont();
     	TextDrawer.setColor(Color.YELLOW);
     }
@@ -142,13 +143,16 @@ public class GameScreen implements Screen {
 	    	ball.setX(ball.getX() + xSpeed*Gdx.graphics.getDeltaTime());
 	    	ball.setY(ball.getY() - ySpeed*Gdx.graphics.getDeltaTime());
 	    	TestBallCollision(ball);
-	    	ball.speed = ball.speed+Gdx.graphics.getDeltaTime();
+	    	ball.speed = ball.speed + 5 * Gdx.graphics.getDeltaTime();
 	    	if(ball.getY() < 0) {
 	    		ball.remove();
 	    		iter.remove();
-	    		if (BallsArray.size==0){ lifeCounter--;
-	    		GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 300, 255, 285);
-	    		}
+	    		if (BallsArray.size == 0){ 
+	    			lifeCounter--;
+	    			GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 400, 255, 285);
+	    			bask.remove();
+	    			basketInit(basket);
+	    		};
 	    	}
 	    }
 	}
@@ -173,10 +177,12 @@ public class GameScreen implements Screen {
 	    while(iter.hasNext()) {
 	    	Bonus bonus = iter.next();
 	    	TestWallsCollisionBonus(bonus);
-	    	TestBasketCollisionBonus(bonus);
-	    	bonus.Yspeed=bonus.Yspeed-500*Gdx.graphics.getDeltaTime();
-	    	bonus.setX(bonus.getX() + bonus.Xspeed*Gdx.graphics.getDeltaTime());
-	    	bonus.setY(bonus.getY() + bonus.Yspeed*Gdx.graphics.getDeltaTime());
+	    	if(TestBasketCollisionBonus(bonus)) iter.remove();
+	    	else {
+		    	bonus.Yspeed=bonus.Yspeed-500*Gdx.graphics.getDeltaTime();
+		    	bonus.setX(bonus.getX() + bonus.Xspeed*Gdx.graphics.getDeltaTime());
+		    	bonus.setY(bonus.getY() + bonus.Yspeed*Gdx.graphics.getDeltaTime());
+	    	}
 	    }
 	}
 	
@@ -218,7 +224,7 @@ public class GameScreen implements Screen {
         stage.addActor(brick);
     }
     
-    public void GenerateBalls(int x, int y, TextureRegion tr, int numbers, String type, float speed, int Rangle1, int Rangle2) {
+    public static void GenerateBalls(int x, int y, TextureRegion tr, int numbers, String type, float speed, int Rangle1, int Rangle2) {
     	for (int i = 0; i<numbers; i++){
     		int angle = MathUtils.random(Rangle1, Rangle2);
     		Ball ball = new Ball(tr, type, speed, angle);
@@ -281,28 +287,33 @@ public class GameScreen implements Screen {
     	
     }
     
-    public void TestBasketCollisionBonus(Bonus bonus){
+    public boolean TestBasketCollisionBonus(Bonus bonus){
     	Rectangle b1 = new Rectangle(bonus.getX(), bonus.getY(),bonus.getWidth(), bonus.getHeight());
     	Rectangle b2 = new Rectangle(bask.getX(), bask.getY(),bask.getWidth(), bask.getHeight());
     	if (Intersector.overlaps(b1, b2)) {
     		BonusController.getInstance().bonusProc(bonus.bonusType);
+    		bonus.remove();
+    		return true;
     	}
+    		return false;
     }
     
-    public void BasketInit(Texture tr){
+    public void basketInit(Texture tr){
     	bask = new Basket(tr);
     	bask.setSize(tr.getWidth(),tr.getHeight());
     	bask.setPosition(Gdx.graphics.getHeight()/2+tr.getWidth()/2, 0);
         stage.addActor(bask);
     }
     public void TestBallCollision(Ball ball){
-    	Rectangle b1 = new Rectangle(ball.getX(), ball.getY(),ball.getWidth(), ball.getHeight());
-    	Rectangle b2 = new Rectangle(bask.getX(), bask.getY(),bask.getWidth(), bask.getHeight());
-    	if (Intersector.overlaps(b1, b2)) {
-    		while(bask.getY() + bask.getHeight() > ball.getY()){
-    			BallPihPih(ball);
-    		}	
-    	ball.angle=(int)(190+(ball.getX()-bask.getX()+ball.getWidth()/2)*150/basket.getWidth()); 
+    	if(bask.isVisible) {
+	    	Rectangle b1 = new Rectangle(ball.getX(), ball.getY(),ball.getWidth(), ball.getHeight());
+	    	Rectangle b2 = new Rectangle(bask.getX(), bask.getY(),bask.getWidth(), bask.getHeight());
+	    	if (Intersector.overlaps(b1, b2)) {
+	    		while(bask.getY() + bask.getHeight() > ball.getY()){
+	    			BallPihPih(ball);
+	    		}	
+	    	ball.angle=(int)(190 + (ball.getX()-bask.getX()+ball.getWidth()/2)*150/basket.getWidth()); 
+	    	}
     	}
     }
     public void BallPihPih(Ball ball){
@@ -362,6 +373,6 @@ public class GameScreen implements Screen {
     	for (int i = 0; i < 2; i++){
     		Balls[i] = new TextureRegion(balls, 0, 30*i, 30, 30);	
     	}  
-    	BasketInit(basket);
+    	basketInit(basket);
     }
 }

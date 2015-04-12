@@ -6,8 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 	class Basket extends Actor {
 		Texture t;
+		Boolean isVisible;
 		public Basket(Texture tr){
 			t = tr;
+			isVisible = true;
 		}
     	@Override
         public void draw(Batch batch, float parentAlpha) {
