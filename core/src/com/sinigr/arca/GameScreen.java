@@ -34,6 +34,8 @@ public class GameScreen implements Screen {
 	        	sc.setScreen(sc.menuScreen);
 	        }
 	    }
+	private final int SCREEN_HEIGHT = 1080;
+	private final int SCREEN_WIDTH = 1920;
 	private OrthographicCamera camera;
 	private SpriteBatch Sb; 
 	private static Stage stage;  
@@ -59,14 +61,14 @@ public class GameScreen implements Screen {
     	ballsArray = new Array<Ball>();  
     	bonusArray = new Array<Bonus>();
     	camera = new OrthographicCamera();
-    	camera.setToOrtho(false, 1920, 1080);
+    	camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
     	FitViewport viewp = new FitViewport(1920, 1080, camera);
     	Sb = new SpriteBatch();
     	stage = new Stage(viewp, Sb);
     	TextureInit();
     	lifeCounter = 3;
     	GenerateLvl(1);
-    	GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 600, 255, 285);
+    	GenerateBalls(SCREEN_WIDTH/2, 50, Balls[0], 1, "normal" , 600, 255, 285);
     	textDrawer = new BitmapFont();
     	textDrawer.setColor(Color.YELLOW);
     }
@@ -163,7 +165,7 @@ public class GameScreen implements Screen {
 	    		iter.remove();
 	    		if (ballsArray.size == 0){ 
 	    			lifeCounter--;
-	    			GenerateBalls(Gdx.graphics.getWidth()/2, 50, Balls[0], 1, "normal" , 400, 255, 285);
+	    			GenerateBalls(SCREEN_WIDTH/2, 50, Balls[0], 1, "normal" , 400, 255, 285);
 	    			bask.remove();
 	    			basketInit(basket);
 	    		};
@@ -176,15 +178,15 @@ public class GameScreen implements Screen {
 	public void BasketUpdate() {
 		if(Gdx.app.getType() != ApplicationType.Android){
 			Point location = MouseInfo.getPointerInfo().getLocation();
-			if(location.getX() < Gdx.graphics.getWidth() - bask.getWidth()) bask.setX((float)location.getX());
-			else bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
+			if(location.getX() < SCREEN_WIDTH - bask.getWidth()) bask.setX((float)location.getX());
+			else bask.setX(SCREEN_WIDTH -bask.getWidth());
 		} else{
 			float aksel = Gdx.input.getAccelerometerY();
 			if(Math.abs(aksel)>0.3)
 			bask.setX(bask.getX()+aksel*8);
 			if(bask.getX()<0) bask.setX(0);
-			if(bask.getX()>=Gdx.graphics.getWidth()-bask.getWidth())
-			bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
+			if(bask.getX()>=SCREEN_WIDTH - bask.getWidth())
+			bask.setX(SCREEN_WIDTH - bask.getWidth());
 		}
 	}
 	/**
@@ -215,24 +217,24 @@ public class GameScreen implements Screen {
 			line = reader.readLine();
 		} catch (IOException e) {}
     	
-    	int BrickW = 64; 
-    	int BrickH = 40;
-    	float CurX = 0,CurY = Gdx.graphics.getHeight()- BrickH;
+    	int brickW = 64; 
+    	int brickH = 40;
+    	float CurX = 0, CurY = SCREEN_HEIGHT - brickH;
     	int CurSymbol = -1; 
     	
     	 while(line != null) {
-    		for(int j=0; j<32; j++){
+    		for(int j = 0; j < 32; j++){
     			CurSymbol=Integer.valueOf(line.substring(j, j + 1)) - 1;
     			if(CurSymbol != -1) {
-    				BrickGen(CurX, CurY, Bricks[CurSymbol], BrickW, BrickH, CurSymbol + 1);
+    				BrickGen(CurX, CurY, Bricks[CurSymbol], brickW, brickH, CurSymbol + 1);
     			}
-    			CurX = CurX + BrickW;
+    			CurX = CurX + brickW;
     		}
     		CurX = 0;
     		try {
 				line = reader.readLine();
 			} catch (IOException e) {}
-    		CurY = CurY-BrickH;
+    		CurY = CurY-brickH;
     	 }
     }
 	/**
@@ -311,12 +313,12 @@ public class GameScreen implements Screen {
      * Проверка пересечения шарика со стенками
      */
     public void TestWallsCollision(Ball ball){
-    	if ((ball.getX()<=0)|| (ball.getX()+ball.getWidth()>=Gdx.graphics.getWidth()))
-        ball.angle=180-ball.angle;
-    	if(ball.getY()+ball.getWidth()>=Gdx.graphics.getHeight()){
-    		while(ball.getY()+ball.getWidth()>=Gdx.graphics.getHeight())
+    	if ((ball.getX() <= 0)|| (ball.getX() + ball.getWidth() >= SCREEN_WIDTH ))
+        ball.angle = 180-ball.angle;
+    	if(ball.getY() + ball.getWidth()>=SCREEN_HEIGHT){
+    		while(ball.getY() + ball.getWidth() >= SCREEN_HEIGHT)
     		BallPihPih(ball);
-    		ball.angle=360-ball.angle;
+    		ball.angle=360 - ball.angle;
     	}
     	
     }
@@ -324,9 +326,9 @@ public class GameScreen implements Screen {
      * Проверка пересечения бонуса со стенами
      */
     public void TestWallsCollisionBonus(Bonus bonus){
-    	if ((bonus.getX()<=0)|| (bonus.getX()+bonus.getWidth()>=Gdx.graphics.getWidth()))
+    	if ((bonus.getX()<=0)|| (bonus.getX() + bonus.getWidth() >= SCREEN_WIDTH))
         bonus.Xspeed = -bonus.Xspeed;
-    	if(bonus.getY()+ bonus.getWidth()>=Gdx.graphics.getHeight())
+    	if(bonus.getY()+ bonus.getWidth() >= SCREEN_HEIGHT)
     		bonus.Yspeed= - bonus.Yspeed;
     }
    /**
@@ -348,7 +350,7 @@ public class GameScreen implements Screen {
     public void basketInit(Texture tr){
     	bask = new Basket(tr);
     	bask.setSize(tr.getWidth(),tr.getHeight());
-    	bask.setPosition(Gdx.graphics.getHeight()/2+tr.getWidth()/2, 0);
+    	bask.setPosition(SCREEN_HEIGHT/2+tr.getWidth()/2, 0);
         stage.addActor(bask);
     }
     /**
