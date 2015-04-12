@@ -1,7 +1,5 @@
 package com.sinigr.arca;
 
-
-
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -28,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 public class GameScreen implements Screen {
 	 class GoToMenuListener extends ClickListener {
@@ -100,10 +97,10 @@ public class GameScreen implements Screen {
     	str = String.valueOf(Gdx.graphics.getFramesPerSecond()) + " FPS";
     	Sb.begin();
     	TextDrawer.draw(Sb, str, 20, 15);
-    	TextDrawer.draw(Sb, "BRICKS LEFT: " + String.valueOf(brickCounter),20, 30);
-    	TextDrawer.draw(Sb, "LIFES LEFT: " + String.valueOf(lifeCounter),20, 45);
+    	TextDrawer.draw(Sb, "BRICKS LEFT: " + String.valueOf(brickCounter), 20, 30);
+    	TextDrawer.draw(Sb, "LIFES LEFT: " + String.valueOf(lifeCounter), 20, 45);
     	Sb.end();
-       }
+     }
 	
 	@Override
 	public void show() {
@@ -126,7 +123,6 @@ public class GameScreen implements Screen {
 	    	Brick brick = iter.next();
 	    	while(balliter.hasNext()) {
 	    		Ball ball = balliter.next();
-	    		//����������� � �������
 	    		if(BallOfBrickCollision(ball, brick)){
 	    			iter.remove();
 	    			brickCounter--;
@@ -157,26 +153,22 @@ public class GameScreen implements Screen {
 	    }
 	}
 	
-	public void BasketUpdate(){
-		
+	public void BasketUpdate() {
 		if(Gdx.app.getType() != ApplicationType.Android){
 			Point location = MouseInfo.getPointerInfo().getLocation();
-			if(location.getX()<Gdx.graphics.getWidth()-bask.getWidth())
-				bask.setX((float)location.getX());
-			else
-				bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
+			if(location.getX() < Gdx.graphics.getWidth() - bask.getWidth()) bask.setX((float)location.getX());
+			else bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
 		} else{
-			
 			float aksel = Gdx.input.getAccelerometerY();
-				if(Math.abs(aksel)>0.3)
-				bask.setX(bask.getX()+aksel*8);
-				if(bask.getX()<0) bask.setX(0);
-				if(bask.getX()>=Gdx.graphics.getWidth()-bask.getWidth())
-				bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
+			if(Math.abs(aksel)>0.3)
+			bask.setX(bask.getX()+aksel*8);
+			if(bask.getX()<0) bask.setX(0);
+			if(bask.getX()>=Gdx.graphics.getWidth()-bask.getWidth())
+			bask.setX(Gdx.graphics.getWidth()-bask.getWidth());
 		}
 	}
 	
-	public void BonusUpdate(){
+	public void BonusUpdate() {
 		Iterator<Bonus> iter = BonusArray.iterator();
 	    while(iter.hasNext()) {
 	    	Bonus bonus = iter.next();
@@ -188,9 +180,9 @@ public class GameScreen implements Screen {
 	    }
 	}
 	
-	public void GenerateLvl(int number){
+	public void GenerateLvl(int number) {
 		String line = null;
-    	FileHandle file = Gdx.files.internal("level/"+String.valueOf(number) + ".txt");
+    	FileHandle file = Gdx.files.internal("level/"+ String.valueOf(number) + ".txt");
     	BufferedReader reader = new BufferedReader(file.reader());
     	try {
 			line = reader.readLine();
@@ -198,15 +190,14 @@ public class GameScreen implements Screen {
     	
     	int BrickW = 64; 
     	int BrickH = 40;
-    	
     	float CurX = 0,CurY = Gdx.graphics.getHeight()- BrickH;
     	int CurSymbol = -1; 
     	
-    	 while( line != null ) {
+    	 while(line != null) {
     		for(int j=0; j<32; j++){
-    			CurSymbol=Integer.valueOf(line.substring(j, j+1))-1;
-    			if(CurSymbol!=-1) {
-    				BrickGen(CurX,CurY,Bricks[CurSymbol], BrickW, BrickH, CurSymbol+1);
+    			CurSymbol=Integer.valueOf(line.substring(j, j + 1)) - 1;
+    			if(CurSymbol != -1) {
+    				BrickGen(CurX, CurY, Bricks[CurSymbol], BrickW, BrickH, CurSymbol + 1);
     				brickCounter++;
     			}
     			CurX = CurX + BrickW;
@@ -214,13 +205,12 @@ public class GameScreen implements Screen {
     		CurX = 0;
     		try {
 				line = reader.readLine();
-			} catch (IOException e) {
-			}
+			} catch (IOException e) {}
     		CurY = CurY-BrickH;
     	 }
     }
 	
-    public void BrickGen(float x, float y, TextureRegion tr, int bW, int bH, int BType){
+    public void BrickGen(float x, float y, TextureRegion tr, int bW, int bH, int BType) {
     	Brick brick = new Brick(tr, BType);
     	brick.setSize(bW,bH);
     	brick.setPosition(x, y);
@@ -228,45 +218,45 @@ public class GameScreen implements Screen {
         stage.addActor(brick);
     }
     
-    public void GenerateBalls(int x, int y, TextureRegion tr, int numbers, String type, float speed, int Rangle1, int Rangle2){
+    public void GenerateBalls(int x, int y, TextureRegion tr, int numbers, String type, float speed, int Rangle1, int Rangle2) {
     	for (int i = 0; i<numbers; i++){
     		int angle = MathUtils.random(Rangle1, Rangle2);
     		Ball ball = new Ball(tr, type, speed, angle);
-        	ball.setSize(20,20);
+        	ball.setSize(30,30);
         	ball.setPosition(x, y);
         	BallsArray.add(ball);
             stage.addActor(ball);
     	}
     }
     
-    public void GenerateBonus(float x, float y){
-    	int rand=MathUtils.random(0, 100);
+    public void GenerateBonus(float x, float y) {
+    	int rand = MathUtils.random(0, 100);
     	Bonus bonus;
         if(rand<=0)
         	bonus = new Bonus(Bonuses[8],9);
-        else if(rand<=15) 
+        else if(rand <= 15) 
         	bonus = new Bonus(Bonuses[1],2);
-        else if(rand<=35) 
+        else if(rand <= 35) 
         	bonus = new Bonus(Bonuses[6],7);
-        else if(rand<=55) 
+        else if(rand <= 55) 
         	bonus = new Bonus(Bonuses[2],3);
-        else if(rand<=58) 
+        else if(rand <= 58) 
         	bonus = new Bonus(Bonuses[4],5);
-        else if(rand<=60) 
+        else if(rand <= 60) 
         	bonus = new Bonus(Bonuses[3],4);
-        else if(rand<=75) 
+        else if(rand <= 75) 
         	bonus = new Bonus(Bonuses[5],6);
-        else if(rand<=90) 
+        else if(rand <= 90) 
         	bonus = new Bonus(Bonuses[0],1);
-        else if(rand<=95) 
+        else if(rand <= 95) 
         	bonus = new Bonus(Bonuses[7],8);
         else  
         	bonus = new Bonus(Bonuses[9],10);
         
-        bonus.setSize(60,60);
-        bonus.setPosition(x, y);
-    	BonusArray.add(bonus);
-        stage.addActor(bonus);
+       bonus.setSize(64, 64);
+       bonus.setPosition(x, y);
+       BonusArray.add(bonus);
+       stage.addActor(bonus);
     }
     
     public void TestWallsCollision(Ball ball){
@@ -340,29 +330,23 @@ public class GameScreen implements Screen {
     	return false;
     }
     public boolean BrickOfBallCollision(Brick brick){
-    	switch(brick.blockType){
-    		case 1:
-    		case 2:
-    		case 3:
-    		case 4:{
-    			brick.remove();
-    			return true;
-    		}
-    		case 5:{
-    			brick.remove();
-    			return true;
-    		}
-    		case 6:{
-    			GenerateBonus(brick.getX(),brick.getY());
-    			brick.remove();
-    			return true;
-    		}
-    		case 7:break;
+    	if(brick.blockType <= 4) {
+    		brick.remove();
+    		return true;
+    	}
+    	if(brick.blockType == 5) {
+    		brick.remove();
+    		return true;
+    	}
+    	if(brick.blockType == 6) {
+    		GenerateBonus(brick.getX(), brick.getY());
+    		brick.remove();
+    		return true;
     	}
     	return false;
     }
-    public void TextureInit(){
-    	bricks = new Texture("images/bricks.png");  
+    public void TextureInit() {
+    	bricks = new Texture("images/bricks.png"); 
     	balls = new Texture("images/balls.png");
     	basket = new Texture("images/basket.png");
     	bonuses = new Texture("images/bonuses.png");
@@ -373,10 +357,10 @@ public class GameScreen implements Screen {
     		Bricks[i] = new TextureRegion(bricks, 0, 40*i, 64, 40);	
     	}
     	for (int i = 0; i < 10; i++){
-    		Bonuses[i] = new TextureRegion(bonuses, 0, 40*i, 40, 40);	
+    		Bonuses[i] = new TextureRegion(bonuses, 0, 64*i, 64, 64);	
     	}
     	for (int i = 0; i < 2; i++){
-    		Balls[i] = new TextureRegion(balls, 0, 20*i, 20, 20);	
+    		Balls[i] = new TextureRegion(balls, 0, 30*i, 30, 30);	
     	}  
     	BasketInit(basket);
     }

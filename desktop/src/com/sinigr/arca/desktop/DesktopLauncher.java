@@ -10,8 +10,8 @@ public class DesktopLauncher {
 		config.title = "Arca";
 	    config.width = 1920;
 	    config.height = 1080;
-	    config.fullscreen = false;
-	    config.vSyncEnabled = true;
+	    config.fullscreen = true;
+	    config.vSyncEnabled = false;
 		new LwjglApplication(new ScreenController(), config);
 	}
 }

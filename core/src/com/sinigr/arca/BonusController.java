@@ -2,9 +2,9 @@ package com.sinigr.arca;
 
 public class BonusController {
 		private static BonusController mInstance;
-	// Инициализация
+
 		public static void initInstance() { if (mInstance == null) mInstance = new BonusController(); }
-	// Возврат текущего класса
+
 		public static BonusController getInstance() { return mInstance; }
 		
 	public void bonusProc(int type){
